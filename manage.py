@@ -20,7 +20,7 @@ if __name__ == '__main__':
     )
 
     PARSER.add_argument(
-        '-v', '--virtual_env', type=str,
+        '-v', '--virtualenv_path', type=str,
         help='If you used virtual environment then provide virtual env'
              'path'
     )
@@ -42,13 +42,15 @@ if __name__ == '__main__':
     INTERPRETER_PATH = ARGUMENTS.interpreter_path
     VIRTUAL_ENV_PATH = ARGUMENTS.virtualenv_path
     CONFIGURATION_PATH = ARGUMENTS.configuration
-    LAMBDA_DIRECTORY_PATH = ARGUMENTS.lambda_directory
+    #LAMBDA_DIRECTORY_PATH = ARGUMENTS.lambda_directory
 
-    if REPO_PATH and INTERPRETER_PATH and CONFIGURATION_PATH:
-        os.environ.setdefault('REPO_PATH', REPO_PATH)
-        os.environ.setdefault('INTERPRETER_PATH', INTERPRETER_PATH)
-        os.environ.setdefault('VIRTUAL_ENV_PATH', VIRTUAL_ENV_PATH)
-        os.environ.setdefault('CONFIGURATION_PATH', CONFIGURATION_PATH)
-        os.environ.setdefault('LAMBDA_DIRECTORY_PATH', LAMBDA_DIRECTORY_PATH)
+    if REPO_PATH and (INTERPRETER_PATH or VIRTUAL_ENV_PATH) and CONFIGURATION_PATH:
+        os.environ['REPO_PATH']= REPO_PATH
+        if INTERPRETER_PATH:
+            os.environ['INTERPRETER_PATH']= INTERPRETER_PATH
+        else:
+            os.environ['VIRTUAL_ENV_PATH']= VIRTUAL_ENV_PATH
+        os.environ['CONFIGURATION_PATH']= CONFIGURATION_PATH
+        #os.environ['LAMBDA_DIRECTORY_PATH]= LAMBDA_DIRECTORY_PATH
 
     print(BuildController().controller())

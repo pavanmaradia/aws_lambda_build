@@ -44,8 +44,7 @@ class ValidatePaths(object):
         for method_name, method in self.validations.items():
             method()
 
-            if self.response.get('status') is False:
-                return self.response
+        return self.response
 
     def parse_paths_form_env(self):
         """
@@ -70,7 +69,10 @@ class ValidatePaths(object):
         }
 
         for _path_type, path in self.paths.items():
-            if not os.path.exists(path):
+            if path is None:
+                print(_path_type,"not set...continuing with virtualenv")
+                continue
+            elif not os.path.exists(path):
                 self.response = {
                     'status': False,
                     'message': ERRORS.get(errors.get(_path_type))
@@ -109,6 +111,10 @@ class ValidatePaths(object):
             lib_path = os.path.join(
                 _python_path, 'lib', 'python*'
             )
+        elif platform().startswith('Windows'):
+            lib_path = os.path.join(
+                _python_path, 'lib', 'site-packages*'
+            )
 
         version_path = glob(lib_path)
         if not version_path:
@@ -127,7 +133,8 @@ class ValidatePaths(object):
         """
 
         try:
-            load(self.paths.get('Configuration'))
+            with open(self.paths.get('Configuration'), 'r') as file:
+                load(file)
             self.response = {'status': True}
         except:
             self.response = {
